@@ -1,11 +1,17 @@
 from fastapi import FastAPI
-from tortoise import run_async
+from tortoise.contrib.fastapi import register_tortoise
 
-from echo.models.db import init_db_models
+from echo import config
 from echo.router import router
 
 
-run_async(init_db_models())
-
 app = FastAPI()
 app.include_router(router)
+
+register_tortoise(
+    app,
+    db_url=config.DATABASE_URL,
+    modules={'models': ['echo.models.db']},
+    generate_schemas=True,
+    add_exception_handlers=True,
+)

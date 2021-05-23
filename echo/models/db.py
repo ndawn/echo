@@ -1,18 +1,7 @@
-from tortoise import Model, Tortoise, fields
+from tortoise import Model, fields
 import ujson
 
 from echo.models import DeviceTypeEnum
-
-from echo import config
-
-
-async def init_db_models():
-    await Tortoise.init(
-        db_url=config.DATABASE_URL,
-        modules={'models': ['models.db']},
-    )
-
-    await Tortoise.generate_schemas()
 
 
 class Device(Model):
