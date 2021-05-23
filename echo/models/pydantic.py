@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from models import DeviceTypeEnum, DeviceConnectionOption, DeviceStatusEnum
+from echo.models import DeviceTypeEnum, DeviceConnectionOption, DeviceStatusEnum
 
 
 class PyDevice(BaseModel):

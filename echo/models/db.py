@@ -1,9 +1,9 @@
 from tortoise import Model, Tortoise, fields
 import ujson
 
-from models import DeviceTypeEnum
+from echo.models import DeviceTypeEnum
 
-import config
+from echo import config
 
 
 async def init_db_models():

@@ -2,26 +2,30 @@ FROM node:14 as client
 
 WORKDIR /app
 
+COPY ./client .
 
-
-FROM ubuntu:21.04
-
-COPY . /app
-
-RUN apt-get update
-RUN apt-get install curl git nginx postgresql -y
-
-COPY echo_nginx.conf /etc/nginx/sites-enabled
-
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
-RUN apt-get install nodejs
-
-RUN git clone https://github.com/ndawn/echo-client.git /app/echo-client
-RUN cd /app/echo-client
 RUN npm install
 RUN npm run build
 
-RUN cd /app
-RUN python -m pip install -r requirements.txt
+FROM ubuntu:21.04
 
-CMD ["uvicorn app:app"]
+WORKDIR /app
+
+COPY --from=client /app/dist ./client/dist/
+
+RUN apt-get update
+RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/Moscow" apt-get install curl python3 python3-pip nginx postgresql -y
+
+COPY ./echo_nginx.conf /etc/nginx/sites-enabled
+RUN rm /etc/nginx/sites-enabled/default
+
+RUN service nginx restart
+
+COPY ./echo ./echo/
+COPY ./requirements.txt .
+
+RUN python3 -m pip install -r requirements.txt
+
+EXPOSE 80
+
+CMD ["uvicorn", "echo.app:app"]
