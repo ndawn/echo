@@ -1,0 +1,15 @@
+services:
+  app:
+    build: ./
+    command: uvicorn app:app
+    ports:
+      80:80
+    depends_on:
+      - db
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./.database/data:/var/lib/postgresql/data
+    ports:
+      5432:5432
