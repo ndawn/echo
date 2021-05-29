@@ -1,11 +1,11 @@
-FROM node:14 as client
-
-WORKDIR /app
-
-COPY ./client .
-
-RUN npm install
-RUN npm run build
+#FROM node:14 as client
+#
+#WORKDIR /app
+#
+#COPY ./client .
+#
+#RUN npm install
+#RUN npm run build
 
 FROM ubuntu:21.04
 
@@ -13,7 +13,7 @@ FROM ubuntu:21.04
 
 WORKDIR /app
 
-COPY --from=client /app/dist ./client/dist/
+#COPY --from=client /app/dist ./client/dist/
 
 RUN apt-get update
 #RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/Moscow" apt-get install nginx python3 python3-pip -y
@@ -28,5 +28,5 @@ COPY ./requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 
 #RUN service nginx restart
-
-CMD ["uvicorn", "echo.app:app", "--host", "web"]
+EXPOSE 8000
+CMD ["uvicorn", "echo.app:app", "--host", "0.0.0.0"]

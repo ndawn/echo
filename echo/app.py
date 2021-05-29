@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 
 from echo import config
-from echo.router import router
+from echo.routing import router
 
 
 app = FastAPI()
