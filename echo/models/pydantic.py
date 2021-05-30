@@ -1,3 +1,4 @@
+from ipaddress import IPv4Address, IPv4Network
 from typing import Optional
 
 from pydantic import BaseModel
@@ -11,22 +12,22 @@ class PyDeleteOut(BaseModel):
 
 class PySubnet(BaseModel):
     pk: int
-    cidr: str
-    gateway_address: str
+    cidr: IPv4Network
+    gateway_address: IPv4Address
 
     class Config:
         orm_mode = True
 
 
 class PySubnetCreateIn(BaseModel):
-    cidr: str
-    gateway_address: str
+    cidr: IPv4Network
+    gateway_address: IPv4Address
 
 
 class PyAgentFull(BaseModel):
     pk: int
-    address: str
     subnet: PySubnet
+    address: IPv4Address
     token: str
 
     class Config:
@@ -35,7 +36,7 @@ class PyAgentFull(BaseModel):
 
 class PyAgent(BaseModel):
     pk: int
-    address: str
+    address: IPv4Address
     subnet: PySubnet
 
     class Config:
@@ -43,15 +44,15 @@ class PyAgent(BaseModel):
 
 
 class PyAgentCreateUpdateIn(BaseModel):
-    address: str
-    subnet_id: str
+    address: IPv4Address
+    subnet_id: int
 
 
 class PyDevice(BaseModel):
     pk: int
     subnet: PySubnet
     hostname: Optional[str]
-    address: str
+    address: IPv4Address
     mac: Optional[str]
     type: DeviceTypeEnum
     connection_options: list[DeviceConnectionOption]
@@ -65,7 +66,7 @@ class PyDevice(BaseModel):
 class PyDeviceCreateUpdateIn(BaseModel):
     subnet_id: int
     hostname: Optional[str]
-    address: str
+    address: IPv4Address
     mac: Optional[str]
     type: Optional[DeviceTypeEnum]
     connection_options: list[DeviceConnectionOption]
@@ -76,7 +77,7 @@ class PyDeviceCreateUpdateIn(BaseModel):
 
 
 class PyDeviceFromScanIn(BaseModel):
-    ip: str
+    ip: IPv4Address
     mac: str
     ports: list[int]
     is_gateway: bool
