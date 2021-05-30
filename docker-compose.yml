@@ -1,3 +1,4 @@
+version: '3.3'
 services:
   server:
     container_name: echo_server
@@ -5,8 +6,6 @@ services:
     command: uvicorn echo.app:app --host 0.0.0.0
     stdin_open: true
     tty: true
-    ports:
-      - 8000:8000
     networks:
       - db
       - server
