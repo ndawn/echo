@@ -79,7 +79,7 @@ class PyDeviceCreateUpdateIn(BaseModel):
 class PyDeviceFromScanIn(BaseModel):
     ip: IPv4Address
     mac: str
-    ports: list[int]
+    ports: list[tuple[str, int]]
     is_gateway: bool
 
 
