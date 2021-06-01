@@ -38,7 +38,14 @@ async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
     gateway = await Device.get_or_none(address=agent.subnet.gateway_address)
 
     if gateway is None:
-        raise HTTPException(status_code=500, detail='Existing gateway device not found in database')
+        gateway = await Device.create(
+            subnet=agent.subnet,
+            address=gateway_data.ip,
+            mac=gateway_data.mac,
+            type=DeviceTypeEnum.UNKNOWN,
+            connection_options=gateway_data.ports,
+            connected_with=[],
+        )
 
     all_subnet_devices = list(
         await Device.filter(subnet_id=agent.subnet_id).exclude(address=gateway.address).values_list('pk')
