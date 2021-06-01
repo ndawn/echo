@@ -48,7 +48,7 @@ async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
         )
 
     all_subnet_devices = list(
-        await Device.filter(subnet_id=agent.subnet_id).exclude(address=gateway.address).values_list('pk')
+        await Device.filter(subnet_id=agent.subnet_id).exclude(address=gateway.address).values_list('id')
     )
 
     created = changed = not_changed = deleted = 0
