@@ -13,12 +13,12 @@ router = APIRouter()
 
 @router.get('/', response_model=list[PyDevice])
 async def list_devices() -> list[PyDevice]:
-    return [PyDevice.from_orm(device) for device in await Device.all().prefetch_related()]
+    return [PyDevice.from_orm(device) for device in await Device.all().prefetch_related('subnet')]
 
 
 @router.get('/:device_id')
 async def get_device(device_id: int):
-    device = await Device.get_or_none(pk=device_id).prefetch_related()
+    device = await Device.get_or_none(pk=device_id).prefetch_related('subnet')
 
     if device is None:
         raise HTTPException(status_code=404)

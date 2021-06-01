@@ -13,12 +13,12 @@ router = APIRouter()
 
 @router.get('/', response_model=list[PyAgent])
 async def list_agents() -> list[PyAgent]:
-    return [PyAgent.from_orm(agent) for agent in await Agent.all().prefetch_related()]
+    return [PyAgent.from_orm(agent) for agent in await Agent.all().prefetch_related('subnet')]
 
 
 @router.get('/:agent_id')
 async def get_agent(agent_id: int):
-    agent = await Agent.get_or_none(pk=agent_id).prefetch_related()
+    agent = await Agent.get_or_none(pk=agent_id).prefetch_related('subnet')
 
     if agent is not None:
         return PyAgent.from_orm(agent)
