@@ -7,6 +7,7 @@ RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/Moscow" apt-get install python3 
 
 COPY ./echo ./echo/
 COPY ./requirements.txt .
+COPY ./create_user.py .
 
 RUN python3 -m pip install -r requirements.txt
 
