@@ -54,6 +54,7 @@ class PyDevice(BaseModel):
     hostname: Optional[str]
     address: IPv4Address
     mac: Optional[str]
+    name: str
     type: DeviceTypeEnum
     connection_options: list[DeviceConnectionOption]
     connected_with: list[int]
@@ -68,6 +69,7 @@ class PyDeviceCreateUpdateIn(BaseModel):
     hostname: Optional[str]
     address: IPv4Address
     mac: Optional[str]
+    name: str
     type: Optional[DeviceTypeEnum]
     connection_options: list[DeviceConnectionOption]
     connected_with: list[int]
@@ -93,3 +95,22 @@ class PyFromScanOut(BaseModel):
     changed: int
     not_changed: int
     deleted: int
+
+
+class PyUserIn(BaseModel):
+    username: str
+    password: str
+
+
+class PyUserOut(BaseModel):
+    pk: int
+    username: str
+    first_name: str
+    last_name: str
+
+    class Config:
+        orm_mode = True
+
+
+class PyToken(BaseModel):
+    access_token: str

@@ -1,5 +1,7 @@
 asyncpg==0.23.0
 fastapi==0.65.0
+fastapi-jwt-auth~=0.5
+passlib[bcrypt]~=1.7
 tortoise-orm==0.17.2
 ujson==4.0.2
 uvicorn==0.13.4

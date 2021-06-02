@@ -1,7 +1,8 @@
 from secrets import token_urlsafe
 
-from fastapi import HTTPException
+from fastapi import Depends, HTTPException
 from fastapi.routing import APIRouter
+from fastapi_jwt_auth import AuthJWT
 from tortoise.exceptions import IntegrityError
 
 from echo.models.db import Agent, Subnet
@@ -12,12 +13,16 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[PyAgent])
-async def list_agents() -> list[PyAgent]:
+async def list_agents(auth: AuthJWT = Depends()) -> list[PyAgent]:
+    auth.jwt_required()
+
     return [PyAgent.from_orm(agent) for agent in await Agent.all().prefetch_related('subnet')]
 
 
 @router.get('/:agent_id')
-async def get_agent(agent_id: int):
+async def get_agent(agent_id: int, auth: AuthJWT = Depends()):
+    auth.jwt_required()
+
     agent = await Agent.get_or_none(pk=agent_id).prefetch_related('subnet')
 
     if agent is not None:
@@ -27,7 +32,7 @@ async def get_agent(agent_id: int):
 
 
 @router.post('/', status_code=201, response_model=PyAgent)
-async def create_agent(data: PyAgentCreateUpdateIn):
+async def create_agent(data: PyAgentCreateUpdateIn, auth: AuthJWT = Depends()):
     subnet = await Subnet.get_or_none(pk=data.subnet_id)
 
     if subnet is None:
@@ -44,7 +49,9 @@ async def create_agent(data: PyAgentCreateUpdateIn):
 
 
 @router.put('/:agent_id', response_model=PyAgent)
-async def update_agent(agent_id: int, data: PyAgentCreateUpdateIn):
+async def update_agent(agent_id: int, data: PyAgentCreateUpdateIn, auth: AuthJWT = Depends()):
+    auth.jwt_required()
+
     agent = await Agent.get_or_none(pk=agent_id)
 
     if agent is None:
@@ -66,7 +73,9 @@ async def update_agent(agent_id: int, data: PyAgentCreateUpdateIn):
 
 
 @router.delete('/:agent_id', response_model=PyDeleteOut)
-async def delete_agent(agent_id: int):
+async def delete_agent(agent_id: int, auth: AuthJWT = Depends()):
+    auth.jwt_required()
+
     agent = await Agent.get_or_none(pk=agent_id)
 
     if agent is None:

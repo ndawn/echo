@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from fastapi.requests import Request
+from fastapi.responses import UJSONResponse
+from fastapi_jwt_auth.exceptions import AuthJWTException
 from tortoise.contrib.fastapi import register_tortoise
 
 from echo import config
@@ -15,3 +18,8 @@ register_tortoise(
     generate_schemas=True,
     add_exception_handlers=True,
 )
+
+
+@app.exception_handler(AuthJWTException)
+def authjwt_exception_handler(request: Request, exception: AuthJWTException):
+    return UJSONResponse(status_code=exception.status_code, content={'detail': exception.message})  # noqa
