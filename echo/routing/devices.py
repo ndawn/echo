@@ -5,7 +5,7 @@ from tortoise.exceptions import IntegrityError
 
 from echo.models import DeviceTypeEnum
 from echo.models.db import Agent, Device, Subnet
-from echo.models.pydantic import PyDeleteOut, PyDevice, PyDeviceCreateUpdateIn, PyFromScanIn, PyFromScanOut
+from echo.models.pydantic import PyDeleteOut, PyDevice, PyDeviceCreateIn, PyDeviceUpdateIn, PyFromScanIn, PyFromScanOut
 
 
 router = APIRouter()
@@ -31,7 +31,7 @@ async def get_device(device_id: int, auth: AuthJWT = Depends()):
 
 
 @router.post('/', status_code=201, response_model=PyDevice)
-async def create_device(data: PyDeviceCreateUpdateIn, auth: AuthJWT = Depends()):
+async def create_device(data: PyDeviceCreateIn, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
     subnet = await Subnet.get_or_none(pk=data.subnet_id)
@@ -48,7 +48,7 @@ async def create_device(data: PyDeviceCreateUpdateIn, auth: AuthJWT = Depends())
 
 
 @router.put('/{device_id}', response_model=PyDevice)
-async def update_device(device_id: int, data: PyDeviceCreateUpdateIn, auth: AuthJWT = Depends()):
+async def update_device(device_id: int, data: PyDeviceUpdateIn, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
     device = await Device.get_or_none(pk=device_id)

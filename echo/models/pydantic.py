@@ -43,7 +43,7 @@ class PyAgent(BaseModel):
         orm_mode = True
 
 
-class PyAgentCreateUpdateIn(BaseModel):
+class PyAgentCreateIn(BaseModel):
     address: IPv4Address
     subnet_id: int
 
@@ -64,7 +64,7 @@ class PyDevice(BaseModel):
         use_enum_values = True
 
 
-class PyDeviceCreateUpdateIn(BaseModel):
+class PyDeviceCreateIn(BaseModel):
     subnet_id: int
     hostname: Optional[str]
     address: IPv4Address
@@ -73,6 +73,14 @@ class PyDeviceCreateUpdateIn(BaseModel):
     type: Optional[DeviceTypeEnum]
     connection_options: list[DeviceConnectionOption]
     connected_with: list[int]
+
+    class Config:
+        use_enum_values = True
+
+
+class PyDeviceUpdateIn(BaseModel):
+    name: Optional[str]
+    type: Optional[DeviceTypeEnum]
 
     class Config:
         use_enum_values = True
