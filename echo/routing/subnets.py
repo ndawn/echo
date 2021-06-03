@@ -17,7 +17,7 @@ async def list_subnets(auth: AuthJWT = Depends()) -> list[PySubnet]:
     return [PySubnet.from_orm(subnet) for subnet in await Subnet.all()]
 
 
-@router.get('/:subnet_id')
+@router.get('/{subnet_id}')
 async def get_subnet(subnet_id: int, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
@@ -41,7 +41,7 @@ async def create_subnet(data: PySubnet, auth: AuthJWT = Depends()):
     return data
 
 
-@router.put('/:subnet_id', response_model=PySubnet)
+@router.put('/{subnet_id}', response_model=PySubnet)
 async def update_subnet(subnet_id: int, data: PySubnet, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
@@ -60,7 +60,7 @@ async def update_subnet(subnet_id: int, data: PySubnet, auth: AuthJWT = Depends(
     return PySubnet.from_orm(subnet)
 
 
-@router.delete('/:subnet_id', response_model=PyDeleteOut)
+@router.delete('/{subnet_id}', response_model=PyDeleteOut)
 async def delete_subnet(subnet_id: int, auth: AuthJWT = Depends()):
     auth.jwt_required()
 

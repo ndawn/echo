@@ -18,7 +18,7 @@ async def list_devices(auth: AuthJWT = Depends()) -> list[PyDevice]:
     return [PyDevice.from_orm(device) for device in await Device.all().prefetch_related('subnet')]
 
 
-@router.get('/:device_id')
+@router.get('/{device_id}')
 async def get_device(device_id: int, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
@@ -47,7 +47,7 @@ async def create_device(data: PyDeviceCreateUpdateIn, auth: AuthJWT = Depends())
     return PyDevice.from_orm(device)
 
 
-@router.put('/:device_id', response_model=PyDevice)
+@router.put('/{device_id}', response_model=PyDevice)
 async def update_device(device_id: int, data: PyDeviceCreateUpdateIn, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
@@ -71,7 +71,7 @@ async def update_device(device_id: int, data: PyDeviceCreateUpdateIn, auth: Auth
     return PyDevice.from_orm(device)
 
 
-@router.delete('/:device_id', response_model=PyDeleteOut)
+@router.delete('/{device_id}', response_model=PyDeleteOut)
 async def delete_device(device_id: int, auth: AuthJWT = Depends()):
     auth.jwt_required()
 

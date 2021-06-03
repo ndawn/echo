@@ -19,7 +19,7 @@ async def list_agents(auth: AuthJWT = Depends()) -> list[PyAgent]:
     return [PyAgent.from_orm(agent) for agent in await Agent.all().prefetch_related('subnet')]
 
 
-@router.get('/:agent_id')
+@router.get('/{agent_id}')
 async def get_agent(agent_id: int, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
@@ -48,7 +48,7 @@ async def create_agent(data: PyAgentCreateUpdateIn, auth: AuthJWT = Depends()):
     return data
 
 
-@router.put('/:agent_id', response_model=PyAgent)
+@router.put('/{agent_id}', response_model=PyAgent)
 async def update_agent(agent_id: int, data: PyAgentCreateUpdateIn, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
@@ -72,7 +72,7 @@ async def update_agent(agent_id: int, data: PyAgentCreateUpdateIn, auth: AuthJWT
     return PyAgent.from_orm(agent)
 
 
-@router.delete('/:agent_id', response_model=PyDeleteOut)
+@router.delete('/{agent_id}', response_model=PyDeleteOut)
 async def delete_agent(agent_id: int, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
