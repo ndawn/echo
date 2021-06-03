@@ -6,7 +6,7 @@ from fastapi_jwt_auth import AuthJWT
 from tortoise.exceptions import IntegrityError
 
 from echo.models.db import Agent, Subnet
-from echo.models.pydantic import PyDeleteOut, PyAgent, PyAgentCreateUpdateIn
+from echo.models.pydantic import PyDeleteOut, PyAgent, PyAgentCreateIn
 
 
 router = APIRouter()
@@ -32,7 +32,9 @@ async def get_agent(agent_id: int, auth: AuthJWT = Depends()):
 
 
 @router.post('/', status_code=201, response_model=PyAgent)
-async def create_agent(data: PyAgentCreateUpdateIn, auth: AuthJWT = Depends()):
+async def create_agent(data: PyAgentCreateIn, auth: AuthJWT = Depends()):
+    auth.jwt_required()
+
     subnet = await Subnet.get_or_none(pk=data.subnet_id)
 
     if subnet is None:
@@ -46,30 +48,6 @@ async def create_agent(data: PyAgentCreateUpdateIn, auth: AuthJWT = Depends()):
         raise HTTPException(status_code=400, detail=str(e))
 
     return data
-
-
-@router.put('/{agent_id}', response_model=PyAgent)
-async def update_agent(agent_id: int, data: PyAgentCreateUpdateIn, auth: AuthJWT = Depends()):
-    auth.jwt_required()
-
-    agent = await Agent.get_or_none(pk=agent_id)
-
-    if agent is None:
-        raise HTTPException(status_code=404)
-
-    subnet = await Subnet.get_or_none(pk=data.subnet_id)
-
-    if subnet is None:
-        raise HTTPException(status_code=400, detail='Subnet with provided ID does not exist')
-
-    await agent.update_from_dict(data.dict(exclude_none=True, exclude_unset=True))
-
-    try:
-        await agent.save()
-    except IntegrityError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return PyAgent.from_orm(agent)
 
 
 @router.delete('/{agent_id}', response_model=PyDeleteOut)

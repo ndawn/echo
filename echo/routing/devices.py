@@ -56,17 +56,14 @@ async def update_device(device_id: int, data: PyDeviceUpdateIn, auth: AuthJWT = 
     if device is None:
         raise HTTPException(status_code=404)
 
-    subnet = await Subnet.get_or_none(pk=data.subnet_id)
-
-    if subnet is None:
-        raise HTTPException(status_code=400, detail='Subnet with provided ID does not exist')
-
     await device.update_from_dict(data.dict(exclude_none=True, exclude_unset=True))
 
     try:
         await device.save()
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    await device.fetch_related('subnet')
 
     return PyDevice.from_orm(device)
 

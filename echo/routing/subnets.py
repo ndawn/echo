@@ -41,25 +41,6 @@ async def create_subnet(data: PySubnet, auth: AuthJWT = Depends()):
     return data
 
 
-@router.put('/{subnet_id}', response_model=PySubnet)
-async def update_subnet(subnet_id: int, data: PySubnet, auth: AuthJWT = Depends()):
-    auth.jwt_required()
-
-    subnet = await Subnet.get_or_none(pk=subnet_id)
-
-    if subnet is None:
-        raise HTTPException(status_code=404)
-
-    await subnet.update_from_dict(data.dict(exclude_none=True, exclude_unset=True))
-
-    try:
-        await subnet.save()
-    except IntegrityError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-    return PySubnet.from_orm(subnet)
-
-
 @router.delete('/{subnet_id}', response_model=PyDeleteOut)
 async def delete_subnet(subnet_id: int, auth: AuthJWT = Depends()):
     auth.jwt_required()
