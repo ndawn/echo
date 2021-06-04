@@ -4,7 +4,7 @@ from fastapi_jwt_auth import AuthJWT
 from tortoise.exceptions import IntegrityError
 
 from echo.models.db import Subnet
-from echo.models.pydantic import PyDeleteOut, PySubnet
+from echo.models.pydantic import PyDeleteOut, PySubnet, PySubnetCreateIn
 
 
 router = APIRouter()
@@ -30,7 +30,7 @@ async def get_subnet(subnet_id: int, auth: AuthJWT = Depends()):
 
 
 @router.post('/', status_code=201, response_model=PySubnet)
-async def create_subnet(data: PySubnet, auth: AuthJWT = Depends()):
+async def create_subnet(data: PySubnetCreateIn, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
     try:
