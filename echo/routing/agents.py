@@ -43,11 +43,11 @@ async def create_agent(data: PyAgentCreateIn, auth: AuthJWT = Depends()):
     try:
         # TODO: Traceroute to agent ip, add resulting devices, check connectivity with the host, deploy with Ansible
 
-        await Agent.create(address=data.address, subnet=subnet, token=token_urlsafe(48))
+        agent = await Agent.create(address=data.address, subnet=subnet, token=token_urlsafe(48))
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return data
+    return PyAgent.from_orm(agent)
 
 
 @router.delete('/{agent_id}', response_model=PyDeleteOut)

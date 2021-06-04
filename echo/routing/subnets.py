@@ -34,11 +34,11 @@ async def create_subnet(data: PySubnetCreateIn, auth: AuthJWT = Depends()):
     auth.jwt_required()
 
     try:
-        await Subnet.create(**data.dict())
+        subnet = await Subnet.create(**data.dict())
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return data
+    return PySubnet.from_orm(subnet)
 
 
 @router.delete('/{subnet_id}', response_model=PyDeleteOut)
