@@ -3,11 +3,9 @@
     "22": "ssh",
     "23": "telnet",
     "80": "http",
-    "443": "https",
-    "5900": "vnc",
-    "5901": "vnc",
-    "5902": "vnc",
-    "5903": "vnc"
+    "443": "https"
   },
-  "agent_port": 11007
+  "subnet": "",
+  "token": "",
+  "server_hostname": ""
 }

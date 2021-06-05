@@ -17,6 +17,8 @@ class Agent(Model):
     address = fields.CharField(max_length=15)
     subnet = fields.OneToOneField(model_name='models.Subnet', related_name='agent', on_delete=fields.CASCADE)
     token = fields.CharField(max_length=64)
+    username = fields.CharField(max_length=64)
+    password = fields.CharField(max_length=64)
 
 
 class Device(Model):

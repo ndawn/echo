@@ -46,6 +46,8 @@ class PyAgent(BaseModel):
 class PyAgentCreateIn(BaseModel):
     address: IPv4Address
     subnet_id: int
+    username: str
+    password: str
 
 
 class PyDevice(BaseModel):
