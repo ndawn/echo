@@ -7,7 +7,7 @@ from scapy.volatile import RandShort
 import json
 
 from echo.config import SERVER_HOST
-from echo.models.db import Agent, Device
+from echo.models.db import Agent, Device, DeviceTypeEnum, Subnet
 from echo.models.pydantic import PyDeviceTraced
 
 
@@ -85,7 +85,7 @@ def scan_address(ip: IPv4Address) -> PyDeviceTraced:
     return PyDeviceTraced(ip=ip, ports=available_ports)
 
 
-async def create_non_existent_devices(device_list: list[PyDeviceTraced]):
+async def create_non_existent_devices(device_list: list[PyDeviceTraced], agent: Agent):
     if not device_list:
         return
 
@@ -97,6 +97,8 @@ async def create_non_existent_devices(device_list: list[PyDeviceTraced]):
         if device is None:
             device = await Device.create(
                 address=str(traced_device.ip),
+                subnet=agent.subnet,
+                type=DeviceTypeEnum.ECHO if str(traced_device.ip) == agent.address else DeviceTypeEnum.UNKNOWN,
                 connected_with=[],
                 connection_options=traced_device.ports,
             )
@@ -156,7 +158,7 @@ def deploy_agent(agent: Agent):
 
 async def deploy(agent: Agent):
     traced_devices = [scan_address(ip) for ip in traceroute(agent.address)]
-    await create_non_existent_devices(traced_devices)
+    await create_non_existent_devices(traced_devices, agent)
     deploy_agent(agent)
 
 

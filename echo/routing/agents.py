@@ -6,7 +6,7 @@ from fastapi_jwt_auth import AuthJWT
 from tortoise.exceptions import IntegrityError
 
 from echo.deploy import deploy, destroy
-from echo.models.db import Agent, Subnet
+from echo.models.db import Agent, Device, Subnet
 from echo.models.pydantic import PyDeleteOut, PyAgent, PyAgentCreateIn
 
 

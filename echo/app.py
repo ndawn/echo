@@ -27,14 +27,3 @@ register_tortoise(
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request: Request, exception: AuthJWTException):
     return UJSONResponse(status_code=exception.status_code, content={'detail': exception.message})  # noqa
-
-
-@app.on_event('startup')
-async def ensure_server_device():
-    await Device.get_or_create({
-        'address': config.SERVER_HOST,
-        'name': 'Echo сервер',
-        'type': DeviceTypeEnum.SERVER,
-        'connection_options': [('ssh', 22)],
-        'connected_with': [],
-    })
