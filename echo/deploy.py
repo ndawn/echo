@@ -50,7 +50,7 @@ def traceroute(ip: IPv4Address) -> list[IPv4Address]:
         if rcv.src == ip_string:
             break
 
-    nodes.sort(lambda node: node[0])  # noqa
+    nodes.sort(key=lambda node: node[0])
 
     return list(map(lambda node: node[1], nodes))
 
