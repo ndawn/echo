@@ -5,6 +5,7 @@ from fastapi.routing import APIRouter
 from fastapi_jwt_auth import AuthJWT
 from tortoise.exceptions import IntegrityError
 
+from echo.deploy import deploy, destroy
 from echo.models.db import Agent, Subnet
 from echo.models.pydantic import PyDeleteOut, PyAgent, PyAgentCreateIn
 
@@ -41,9 +42,8 @@ async def create_agent(data: PyAgentCreateIn, auth: AuthJWT = Depends()):
         raise HTTPException(status_code=400, detail='Subnet with provided ID does not exist')
 
     try:
-        # TODO: Traceroute to agent ip, add resulting devices, check connectivity with the host, deploy with Ansible
-
         agent = await Agent.create(address=data.address, subnet=subnet, token=token_urlsafe(48))
+        await deploy(agent)
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -59,7 +59,7 @@ async def delete_agent(agent_id: int, auth: AuthJWT = Depends()):
     if agent is None:
         return PyDeleteOut(deleted=False)
 
-    # TODO: Destroy agent at target host
+    destroy(agent)
 
     await agent.delete()
 

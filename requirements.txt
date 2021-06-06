@@ -1,4 +1,5 @@
 asyncpg==0.23.0
+fabric~=2.6
 fastapi==0.65.0
 fastapi-jwt-auth~=0.5
 passlib[bcrypt]~=1.7

@@ -29,7 +29,7 @@ class Device(Model):
     )
     hostname = fields.CharField(max_length=255, default='')
     address = fields.CharField(max_length=15, unique=True)
-    mac = fields.CharField(max_length=17, unique=True, null=True)
+    mac = fields.CharField(max_length=17, null=True)
     name = fields.CharField(max_length=64, default='')
     type = fields.CharEnumField(enum_type=DeviceTypeEnum)
     connection_options = fields.JSONField(encoder=ujson.dumps, decoder=ujson.loads)

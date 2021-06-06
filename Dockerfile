@@ -6,8 +6,9 @@ RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/Moscow" apt-get install python3 python3-pip -y
 
 COPY ./echo ./echo/
-COPY ./requirements.txt .
+COPY ./agent_config.json .
 COPY ./create_user.py .
+COPY ./requirements.txt .
 
 RUN python3 -m pip install -r requirements.txt
 

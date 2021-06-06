@@ -89,6 +89,8 @@ async def delete_device(device_id: int, auth: AuthJWT = Depends()):
     response_model_exclude_unset=True,
 )
 async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
+    print(data.dict())
+
     agent = await Agent.get_or_none(token=data.agent_token).prefetch_related('subnet')
 
     if agent is None:
@@ -187,9 +189,13 @@ async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
             deleted += 1
             await subnet_device.delete()
 
-    return PyFromScanOut(
+    result = PyFromScanOut(
         created=created,
         changed=changed,
         not_changed=not_changed,
         deleted=deleted,
     )
+
+    print(result.dict())
+
+    return result

@@ -88,6 +88,11 @@ class PyDeviceUpdateIn(BaseModel):
         use_enum_values = True
 
 
+class PyDeviceTraced(BaseModel):
+    ip: IPv4Address
+    ports: list[tuple[str, int]]
+
+
 class PyDeviceFromScanIn(BaseModel):
     ip: IPv4Address
     mac: str
