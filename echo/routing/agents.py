@@ -42,7 +42,13 @@ async def create_agent(data: PyAgentCreateIn, auth: AuthJWT = Depends()):
         raise HTTPException(status_code=400, detail='Subnet with provided ID does not exist')
 
     try:
-        agent = await Agent.create(address=data.address, subnet=subnet, token=token_urlsafe(48))
+        agent = await Agent.create(
+            address=data.address,
+            subnet=subnet,
+            token=token_urlsafe(48),
+            username=data.username,
+            password=data.password,
+        )
         await deploy(agent)
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e))
