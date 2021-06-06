@@ -109,7 +109,6 @@ class PyFromScanOut(BaseModel):
     created: int
     changed: int
     not_changed: int
-    deleted: int
 
 
 class PyUserIn(BaseModel):

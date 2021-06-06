@@ -1,5 +1,5 @@
 import os
-from ipaddress import IPv4Address
+from ipaddress import IPv4Address, IPv4Network
 
 from fabric import Config as FabricConfig, Connection
 from scapy.layers.inet import IP, TCP, sr1, traceroute as scapy_traceroute
@@ -7,7 +7,7 @@ from scapy.volatile import RandShort
 import json
 
 from echo.config import SERVER_HOST
-from echo.models.db import Agent, Device, DeviceTypeEnum, Subnet
+from echo.models.db import Agent, Device, DeviceTypeEnum
 from echo.models.pydantic import PyDeviceTraced
 
 
@@ -31,7 +31,7 @@ class TemporaryAgentConfig:
         with open(self.__temp_file_name, 'w') as temp_file:
             json.dump(self.__agent_config, temp_file)
 
-        return temp_file
+        return self.__temp_file_name
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         os.remove(self.__temp_file_name)
@@ -97,7 +97,7 @@ async def create_non_existent_devices(device_list: list[PyDeviceTraced], agent: 
         if device is None:
             device = await Device.create(
                 address=str(traced_device.ip),
-                subnet=agent.subnet,
+                subnet=agent.subnet if traced_device.ip in IPv4Network(agent.subnet.cidr) else None,
                 type=DeviceTypeEnum.ECHO if str(traced_device.ip) == agent.address else DeviceTypeEnum.UNKNOWN,
                 connected_with=[],
                 connection_options=traced_device.ports,
@@ -136,24 +136,13 @@ def deploy_agent(agent: Agent):
 
     connection.connect_kwargs.password = agent.password
 
-    connection.sudo('apt update')
-    connection.sudo('apt install apt-transport-https ca-certificates curl gnupg lsb-release git -y')
-    connection.sudo('curl -fsSL https://download.docker.com/linux/ubuntu/gpg '
-                    '| gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg')
-    connection.sudo('echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] '
-                    'https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" '
-                    '| tee /etc/apt/sources.list.d/docker.list > /dev/null')
-    connection.sudo('apt update')
-    connection.sudo('apt install docker-ce docker-ce-cli containerd.io docker-compose -y')
-    connection.sudo('service docker start')
-    connection.run('git clone https://github.com/ndawn/echo-agent.git')
-    connection.run('cd echo-agent')
-
     with TemporaryAgentConfig(agent) as config_file:
         connection.put(config_file, 'echo_agent/config.json')
 
-    connection.sudo('docker-compose up --build -d')
-    connection.run('cd -')
+    connection.put('deploy.sh', '.')
+    connection.sudo('/bin/sh deploy.sh')
+
+    connection.close()
 
 
 async def deploy(agent: Agent):
@@ -177,7 +166,7 @@ def destroy(agent: Agent):
 
     connection.connect_kwargs.password = agent.password
 
-    connection.sudo('docker-compose down')
-    connection.sudo('docker system prune')
-    connection.sudo('service docker stop')
-    connection.run('rm -rf echo-agent')
+    connection.put('destroy.sh', '.')
+    connection.sudo('/bin/sh destroy.sh')
+
+    connection.close()

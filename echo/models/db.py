@@ -25,6 +25,7 @@ class Device(Model):
     subnet = fields.ForeignKeyField(
         model_name='models.Subnet',
         related_name='devices',
+        null=True,
         on_delete=fields.RESTRICT,
     )
     hostname = fields.CharField(max_length=255, default='')

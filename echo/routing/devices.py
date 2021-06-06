@@ -117,21 +117,21 @@ async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
         x[0] for x in await Device.filter(subnet_id=agent.subnet_id).exclude(address=gateway.address).values_list('id')
     ]
 
-    created = changed = not_changed = deleted = 0
+    created = changed = not_changed = 0
     is_changed = False
 
-    agent.subnet.gateway_address = gateway_data.ip
+    agent.subnet.gateway_address = str(gateway_data.ip)
     await agent.subnet.save()
 
-    if gateway.address != gateway_data.ip:
+    if gateway.address != str(gateway_data.ip):
         is_changed = True
-        gateway.address = gateway_data.ip
+        gateway.address = str(gateway_data.ip)
 
-    if gateway.mac != gateway_data.mac:
+    if gateway.mac != gateway_data.mac and gateway_data.mac is not None:
         is_changed = True
         gateway.mac = gateway_data.mac
 
-    if tuple(gateway.connection_options) != tuple(gateway_data.ports):
+    if gateway.connection_options != gateway_data.ports:
         is_changed = True
         gateway.connection_options = gateway_data.ports
 
@@ -147,12 +147,12 @@ async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
 
         is_changed = is_created = False
 
-        device = await Device.get_or_none(subnet=agent.subnet, address=device_data.ip)
+        device = await Device.get_or_none(subnet=agent.subnet, address=str(gateway_data.ip))
 
         if device is None:
             device = Device(
                 subnet=agent.subnet,
-                address=device_data.ip,
+                address=str(gateway_data.ip),
                 mac=device_data.mac,
                 type=DeviceTypeEnum.UNKNOWN,
                 connection_options=device_data.ports,
@@ -161,11 +161,11 @@ async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
 
             is_created = True
         else:
-            if device.mac != device_data.mac:
+            if device.mac != device_data.mac and device_data.mac is not None:
                 is_changed = True
                 device.mac = device_data.mac
 
-            if tuple(device.connection_options) != tuple(device_data.ports):
+            if device.connection_options != device_data.ports:
                 is_changed = True
                 device.connection_options = device_data.ports
 
@@ -182,18 +182,10 @@ async def from_scan(data: PyFromScanIn) -> PyFromScanOut:
         else:
             not_changed += 1
 
-    for subnet_device_id in all_subnet_devices:
-        subnet_device = await Device.get_or_none(pk=subnet_device_id)
-
-        if subnet_device is not None:
-            deleted += 1
-            await subnet_device.delete()
-
     result = PyFromScanOut(
         created=created,
         changed=changed,
         not_changed=not_changed,
-        deleted=deleted,
     )
 
     print(result.dict())
