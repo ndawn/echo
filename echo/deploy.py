@@ -43,7 +43,7 @@ class TemporaryAgentConfig:
 def traceroute(ip: IPv4Address) -> list[IPv4Address]:
     ip_string = str(ip)
 
-    ans, unans = scapy_traceroute(ip_string)
+    ans, unans = scapy_traceroute(ip_string, verbose=0)
 
     nodes = []
 
@@ -140,7 +140,7 @@ def deploy_agent(agent: Agent):
     connection.connect_kwargs.password = agent.password
 
     with TemporaryAgentConfig(agent) as config_file:
-        connection.put(config_file, 'echo_agent/config.json')
+        connection.put(config_file, 'config.json')
 
     connection.put('deploy.sh', '.')
     connection.sudo('/bin/sh deploy.sh')
