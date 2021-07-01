@@ -52,7 +52,7 @@ class PyAgentCreateIn(BaseModel):
 
 class PyDevice(BaseModel):
     pk: int
-    subnet: PySubnet
+    subnet: Optional[PySubnet]
     hostname: Optional[str]
     address: IPv4Address
     mac: Optional[str]
