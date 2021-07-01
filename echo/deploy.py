@@ -22,7 +22,7 @@ class TemporaryAgentConfig:
         self.__agent_config['server_hostname'] = SERVER_HOST
         self.__agent_config['subnet'] = self.__agent.subnet.cidr
         self.__agent_config['token'] = self.__agent.token
-        self.__agent_config['secret'] = Fernet.generate_key()
+        self.__agent_config['secret'] = Fernet.generate_key().decode()
         self.__agent_config['insecure'] = AGENT_INSECURE
 
     def __enter__(self):
