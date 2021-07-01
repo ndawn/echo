@@ -1,12 +1,13 @@
 import os
 from ipaddress import IPv4Address, IPv4Network
 
+from cryptography.fernet import Fernet
 from fabric import Config as FabricConfig, Connection
 from scapy.layers.inet import IP, TCP, sr1, traceroute as scapy_traceroute
 from scapy.volatile import RandShort
 import json
 
-from echo.config import SERVER_HOST
+from echo.config import AGENT_INSECURE, SERVER_HOST
 from echo.models.db import Agent, Device, DeviceTypeEnum
 from echo.models.pydantic import PyDeviceTraced
 
@@ -21,6 +22,8 @@ class TemporaryAgentConfig:
         self.__agent_config['server_hostname'] = SERVER_HOST
         self.__agent_config['subnet'] = self.__agent.subnet.cidr
         self.__agent_config['token'] = self.__agent.token
+        self.__agent_config['secret'] = Fernet.generate_key()
+        self.__agent_config['insecure'] = AGENT_INSECURE
 
     def __enter__(self):
         with open('agent_config.json') as config_file:

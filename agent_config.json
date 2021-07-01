@@ -7,5 +7,7 @@
   },
   "subnet": "",
   "token": "",
-  "server_hostname": ""
+  "secret": "",
+  "server_hostname": "",
+  "insecure": false
 }
