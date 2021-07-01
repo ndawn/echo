@@ -49,9 +49,14 @@ async def create_agent(data: PyAgentCreateIn, auth: AuthJWT = Depends()):
             username=data.username,
             password=data.password,
         )
-        await deploy(agent)
     except IntegrityError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+    try:
+        await deploy(agent)
+    except Exception as e:
+        await agent.delete()
+        raise HTTPException(status_code=500, detail=str(e))
 
     return PyAgent.from_orm(agent)
 
