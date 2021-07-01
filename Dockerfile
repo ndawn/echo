@@ -3,7 +3,7 @@ FROM ubuntu:21.04
 WORKDIR /app
 
 RUN apt-get update
-RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/Moscow" apt-get install python3 python3-pip openssl -y
+RUN DEBIAN_FRONTEND="noninteractive" TZ="Europe/Moscow" apt-get install python3 python3-pip openssl libpcap0.8 -y
 
 COPY ./echo ./echo/
 COPY ./agent_config.json .
