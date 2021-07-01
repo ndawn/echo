@@ -15,7 +15,10 @@ router = APIRouter()
 async def list_devices(auth: AuthJWT = Depends()) -> list[PyDevice]:
     auth.jwt_required()
 
-    return [PyDevice.from_orm(device) for device in await Device.all().prefetch_related('subnet')]
+    return [
+        PyDevice.from_orm(device)
+        for device in filter(lambda x: x.subnet is not None, await Device.all().prefetch_related('subnet'))
+    ]
 
 
 @router.get('/{device_id}')
@@ -24,7 +27,7 @@ async def get_device(device_id: int, auth: AuthJWT = Depends()):
 
     device = await Device.get_or_none(pk=device_id).prefetch_related('subnet')
 
-    if device is None:
+    if device is None or device.subnet is None:
         raise HTTPException(status_code=404)
 
     return PyDevice.from_orm(device)
